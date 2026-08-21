@@ -1,0 +1,65 @@
+# ===== Datasets & model weights (never commit) =====
+*.pth
+*.pt
+*.bin
+*.ckpt
+*.safetensors
+*.onnx
+*.h5
+*.hdf5
+*.npy
+*.npz
+*.pkl
+*.pickle
+*.tar.gz
+*.zip
+*.rar
+*.7z
+data/
+datasets/
+artifacts/
+checkpoints/
+weights/
+runs/
+logs/
+features/
+egemaps_experiment/
+
+# Raw media / labels that must never be redistributed
+*.wav
+*.mp3
+*.flac
+*.mp4
+*.avi
+*.mkv
+*.csv
+*.xlsx
+*.xls
+
+# ===== Documents & manuscripts =====
+*.docx
+*.doc
+*.pdf
+*.pptx
+*.ppt
+
+# ===== Python / IDE / OS =====
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+.env
+.env.*
+.idea/
+.vscode/
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Local scratch =====
+*.tmp
+*.bak
+*_NOT_FOR_GITHUB/

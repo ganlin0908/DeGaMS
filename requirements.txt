@@ -1,0 +1,41 @@
+# DeGaMS — reference environment (Python 3.14, Windows 11, CUDA 12.8)
+# Versions below are the exact ones used to produce the reported results.
+#
+# Install PyTorch first, from the CUDA 12.8 wheel index:
+#   pip install torch==2.11.0 torchaudio==2.11.0 --index-url https://download.pytorch.org/whl/cu128
+# Then:
+#   pip install -r requirements.txt
+
+# --- core ---
+torch==2.11.0
+torchaudio==2.11.0
+numpy==2.4.6
+pandas==3.0.5
+tqdm==4.70.0
+
+# --- pretrained encoders (MentalBERT / chinese-roberta-wwm-ext / wav2vec 2.0) ---
+transformers==5.13.0
+tokenizers==0.22.2
+huggingface_hub==1.22.0
+safetensors==0.8.0
+
+# --- audio front-end (resample, VAD, mel) ---
+librosa==0.11.0
+soundfile==0.14.0
+soxr==1.1.0
+scipy==1.18.0
+
+# --- CMDC SubjectInfo.xlsx ---
+openpyxl==3.1.5
+
+# --- optional: speech enhancement fallbacks for the DAIC/E-DAIC audio branch ---
+# The extractor degrades gracefully (DeepFilterNet -> noisereduce -> raw+Silero
+# -> energy VAD), so neither package is required to reproduce the results.
+# deepfilternet==0.5.6
+# noisereduce==3.0.3
+
+# --- optional: eGeMAPS baseline features only, not used by DeGaMS ---
+# opensmile==2.5.0
+#
+# Silero VAD is fetched at runtime via torch.hub (snakers4/silero-vad) and
+# needs no pip package. OpenFace 2.2.0 is an external binary; see README.
