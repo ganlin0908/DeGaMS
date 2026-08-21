@@ -120,7 +120,7 @@ and `CMDC` additionally reuse the Dataset and training loop defined in `DAIC/_da
 ### 1. Install
 
 ```bash
-git clone https://github.com/ganlin0908/DeGaMS.git DeGaMS && cd DeGaMS
+git clone <anonymous-repository-url> DeGaMS && cd DeGaMS
 python -m venv .venv && .venv\Scripts\activate
 pip install torch==2.11.0 torchaudio==2.11.0 --index-url https://download.pytorch.org/whl/cu128
 pip install -r requirements.txt
@@ -139,7 +139,7 @@ Point `DEGAMS_ROOT` at the directory holding the raw corpora (`DAICWOZ/`, `EDAIC
 the generated `egemaps_experiment/` feature tree:
 
 ```powershell
-$env:DEGAMS_ROOT = "E:\depression_data"
+$env:DEGAMS_ROOT = "/path/to/degams_data"
 ```
 
 Then follow the per-corpus order in `PIPELINE.md`, which is dependency-ordered
@@ -156,14 +156,13 @@ Datasets consume. Everything is configured by environment variable; no source ed
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `DEGAMS_ROOT` | `D:\Depression` | Root holding the raw corpora and the generated feature tree |
+| `DEGAMS_ROOT` | `/path/to/degams_data` (required) | Root holding the raw corpora and the generated feature tree |
 | `DEGAMS_FEATURE_ROOT` | derived from `DEGAMS_ROOT` | Feature-tree root for the active corpus. Set it to `degams_avboost_v1/<corpus>` (DAIC, E-DAIC) or `degams_cmdc_tav` (CMDC) to reproduce the reported results. |
 | `DEGAMS_RUN_ROOT` | `<repo>/runs` | Where training runs write checkpoints and `SUMMARY.json` |
 | `DEGAMS_CMDC_FOLD` | `1` | Active CMDC fold, `1`–`5` |
 | `DEGAMS_AVBOOST` | unset | Legacy in-place substitution route for DAIC/E-DAIC; **not** used by the reported runs and mutually exclusive with `DEGAMS_FEATURE_ROOT`. See `DAIC/PIPELINE.md`. |
 
-The `DEGAMS_ROOT` default is the path used for the reported experiments and is retained only so
-the recorded commands stay literally reproducible; set the variable and it is never consulted.
+You **must** set `DEGAMS_ROOT` before extraction or training. This repository does not ship machine-specific absolute paths.
 
 ### 3. Train
 

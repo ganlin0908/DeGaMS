@@ -23,7 +23,7 @@ import torch
 from tqdm.auto import tqdm
 from transformers import Wav2Vec2FeatureExtractor, Wav2Vec2Model
 
-ROOT = Path(os.environ.get("DEGAMS_ROOT", r"D:\Depression"))
+ROOT = Path(os.environ.get("DEGAMS_ROOT", r"/path/to/degams_data"))
 FEAT = ROOT / "egemaps_experiment" / "1_feature_build" / "features" / "cmdc"
 OUT = ROOT / "egemaps_experiment" / "artifacts" / "wav2vec_embeds" / "cmdc"
 EXTRACTED = ROOT / "CMDC" / "raw" / "extracted"

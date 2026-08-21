@@ -32,7 +32,7 @@ import torch
 import torch.nn.functional as F
 from tqdm import tqdm
 
-ROOT = Path(os.environ.get("DEGAMS_ROOT", r"D:\Depression"))
+ROOT = Path(os.environ.get("DEGAMS_ROOT", r"/path/to/degams_data"))
 EDAIC = ROOT / "EDAIC"
 RAW = EDAIC / "raw" / "data"
 FEATURES = EDAIC / "extracted_features"

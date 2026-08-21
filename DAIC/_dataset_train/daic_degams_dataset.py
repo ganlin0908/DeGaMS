@@ -16,7 +16,7 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 
-ROOT = Path(os.environ.get("DEGAMS_ROOT", r"D:\Depression"))
+ROOT = Path(os.environ.get("DEGAMS_ROOT", r"/path/to/degams_data"))
 # Default: cleaned v2 (Ellie-free text, OpenFace-210) + VAD-pooled wav2vec2
 # Override with DEGAMS_FEATURE_ROOT (e.g. .../degams_avboost_v1/daic) for isolated AV-boost.
 _DEFAULT_CLEAN = ROOT / "egemaps_experiment" / "artifacts" / "degams_clean_v2" / "daic"

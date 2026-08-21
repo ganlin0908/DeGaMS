@@ -27,7 +27,7 @@ from daic_degams_dataset import (  # noqa: F401
     collate_degams,
 )
 
-ROOT = Path(os.environ.get("DEGAMS_ROOT", r"D:\Depression"))
+ROOT = Path(os.environ.get("DEGAMS_ROOT", r"/path/to/degams_data"))
 _DEFAULT = ROOT / "egemaps_experiment" / "artifacts" / "degams_cmdc_tav"
 _feat_root = os.environ.get("DEGAMS_FEATURE_ROOT")
 CLEAN = Path(_feat_root) if _feat_root else _DEFAULT

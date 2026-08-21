@@ -17,7 +17,7 @@ import pandas as pd
 import torch
 from tqdm.auto import tqdm
 
-ROOT = Path(os.environ.get("DEGAMS_ROOT", r"D:\Depression"))
+ROOT = Path(os.environ.get("DEGAMS_ROOT", r"/path/to/degams_data"))
 SRC_TEXT = ROOT / "egemaps_experiment" / "1_feature_build" / "features" / "cmdc"
 SRC_W2V = ROOT / "egemaps_experiment" / "artifacts" / "wav2vec_embeds" / "cmdc"
 OUT = ROOT / "egemaps_experiment" / "artifacts" / "degams_cmdc_tav"

@@ -57,7 +57,7 @@ OUT = Path(
     os.environ.get("DEGAMS_RUN_ROOT")
     or str(Path(__file__).resolve().parents[2] / "runs")
 ) / "cmdc_degams_seed_sweep"
-FEAT = Path(os.environ.get("DEGAMS_ROOT", r"D:\Depression")) / "egemaps_experiment" / "artifacts" / "degams_cmdc_tav"
+FEAT = Path(os.environ.get("DEGAMS_ROOT", r"/path/to/degams_data")) / "egemaps_experiment" / "artifacts" / "degams_cmdc_tav"
 
 
 @torch.no_grad()

@@ -24,7 +24,7 @@ from typing import List, Optional, Tuple
 import torch
 from transformers import AutoModel, AutoTokenizer
 
-ROOT = Path(os.environ.get("DEGAMS_ROOT", r"D:\Depression"))
+ROOT = Path(os.environ.get("DEGAMS_ROOT", r"/path/to/degams_data"))
 FEAT_DIR = ROOT / "egemaps_experiment" / "1_feature_build" / "features" / "cmdc"
 TEXT_MODELS = ["hfl/chinese-roberta-wwm-ext", "bert-base-chinese"]
 MAX_LENGTH = 512

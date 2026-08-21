@@ -23,7 +23,7 @@ import numpy as np
 import pandas as pd
 import torch
 
-ROOT = Path(os.environ.get("DEGAMS_ROOT", r"D:\Depression")) / "CMDC"
+ROOT = Path(os.environ.get("DEGAMS_ROOT", r"/path/to/degams_data")) / "CMDC"
 EXTRACTED = ROOT / "raw" / "extracted"
 FEAT = ROOT / "extracted_features"
 SUBJECT_INFO = EXTRACTED / "SubjectInfo.xlsx"

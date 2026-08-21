@@ -28,7 +28,7 @@ POOLING_STRATEGY = "cls"  # 'cls' ([CLS] token) or 'mean' (mask-aware mean pooli
 BATCH_SIZE = 128  # 128-256 saturates an RTX 5090
 MAX_LENGTH = 512  # BERT truncation limit
 
-_ROOT = Path(os.environ.get("DEGAMS_ROOT", r"D:\Depression"))
+_ROOT = Path(os.environ.get("DEGAMS_ROOT", r"/path/to/degams_data"))
 JSON_INPUT_PATH = str(_ROOT / "DAICWOZ" / "processed_output" / "processed_segments.json")
 OUTPUT_FEATURE_DIR = str(_ROOT / "DAICWOZ" / "features" / "text")
 

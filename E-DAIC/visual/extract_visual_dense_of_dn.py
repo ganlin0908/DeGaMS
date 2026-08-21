@@ -21,7 +21,7 @@ import torch
 from tqdm.auto import tqdm
 
 CODE_FEAT = Path(__file__).resolve().parent
-ROOT = Path(os.environ.get("DEGAMS_ROOT", r"D:\Depression"))
+ROOT = Path(os.environ.get("DEGAMS_ROOT", r"/path/to/degams_data"))
 sys.path.insert(0, str(CODE_FEAT))
 
 from clean_v2_paths import (  # noqa: E402

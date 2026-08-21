@@ -40,7 +40,7 @@ from rebuild_edaic_visual_768 import (
     project_turns,
 )
 
-ROOT = Path(os.environ.get("DEGAMS_ROOT", r"D:\Depression"))
+ROOT = Path(os.environ.get("DEGAMS_ROOT", r"/path/to/degams_data"))
 EDAIC_RAW = ROOT / "EDAIC" / "raw" / "data"
 EDAIC_OUT = ROOT / "EDAIC" / "extracted_features"
 DAIC_FEAT = ROOT / "DAICWOZ" / "extracted_features"
@@ -51,11 +51,9 @@ TEXT_FALLBACK = "bert-base-uncased"
 AUDIO_DIM = 88
 HF_TOKEN = os.environ.get("HF_TOKEN") or os.environ.get("HUGGING_FACE_HUB_TOKEN") or None
 # Prefer local HF cache snapshot (MentalBERT is gated).
-MENTALBERT_LOCAL = Path(
-    r"C:\Users\Administrator\.cache\huggingface\hub"
-    r"\models--mental--mental-bert-base-uncased\snapshots"
-    r"\24809aa822c76639760d0d934742d1b42f89942f"
-)
+# Optional local snapshot override (HF hub cache). Leave unset to download via transformers.
+_MENTALBERT_LOCAL_ENV = os.environ.get("DEGAMS_MENTALBERT_LOCAL", "").strip()
+MENTALBERT_LOCAL = Path(_MENTALBERT_LOCAL_ENV) if _MENTALBERT_LOCAL_ENV else None
 MAX_UTT_DUR_SEC = 60.0  # drop broken E-DAIC ASR rows spanning almost whole file
 
 POSE_COLS = ["pose_Tx", "pose_Ty", "pose_Tz", "pose_Rx", "pose_Ry", "pose_Rz"]
@@ -373,7 +371,11 @@ def encode_audio_segments(
 
 
 def resolve_mentalbert_path() -> str:
-    if MENTALBERT_LOCAL.exists() and (MENTALBERT_LOCAL / "config.json").exists():
+    if (
+        MENTALBERT_LOCAL is not None
+        and MENTALBERT_LOCAL.exists()
+        and (MENTALBERT_LOCAL / "config.json").exists()
+    ):
         return str(MENTALBERT_LOCAL)
     return TEXT_MODEL
 
@@ -394,7 +396,7 @@ def init_models(device: torch.device):
         # Do NOT silently fall back for full extract — keep modality consistent with DAIC.
         raise RuntimeError(
             "Failed to load MentalBERT (needed for E-DAIC-only subjects). "
-            f"Set HF_TOKEN or ensure local cache at {MENTALBERT_LOCAL}. Underlying: {e}"
+            f"Set HF_TOKEN or DEGAMS_MENTALBERT_LOCAL to a local MentalBERT snapshot. Underlying: {e}"
         ) from e
     log("Loading openSMILE eGeMAPSv02 functionals")
     smile = init_egemaps()

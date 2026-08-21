@@ -28,7 +28,7 @@ from tqdm.auto import tqdm
 from transformers import Wav2Vec2Model, Wav2Vec2Processor
 
 CODE_FEAT = Path(__file__).resolve().parent
-ROOT = Path(os.environ.get("DEGAMS_ROOT", r"D:\Depression"))
+ROOT = Path(os.environ.get("DEGAMS_ROOT", r"/path/to/degams_data"))
 sys.path.insert(0, str(CODE_FEAT))
 
 from audio_front_vad import (  # noqa: E402

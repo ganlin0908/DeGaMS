@@ -17,7 +17,7 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 
-ROOT = Path(os.environ.get("DEGAMS_ROOT", r"D:\Depression"))
+ROOT = Path(os.environ.get("DEGAMS_ROOT", r"/path/to/degams_data"))
 CLEAN = ROOT / "egemaps_experiment" / "artifacts" / "degams_clean_v2"
 OUT = ROOT / "egemaps_experiment" / "artifacts" / "degams_avboost_v1"
 

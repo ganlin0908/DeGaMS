@@ -4,7 +4,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-ROOT = Path(os.environ.get("DEGAMS_ROOT", r"D:\Depression"))
+ROOT = Path(os.environ.get("DEGAMS_ROOT", r"/path/to/degams_data"))
 CLEAN_ROOT = ROOT / "egemaps_experiment" / "artifacts" / "degams_clean_v2"
 
 DAIC_SRC_TEXT = ROOT / "egemaps_experiment" / "1_feature_build" / "features" / "daic"

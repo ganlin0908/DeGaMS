@@ -29,7 +29,7 @@ from daic_degams_dataset import (
     turn_has_depression_keyword,
 )
 
-ROOT = Path(os.environ.get("DEGAMS_ROOT", r"D:\Depression"))
+ROOT = Path(os.environ.get("DEGAMS_ROOT", r"/path/to/degams_data"))
 _DEFAULT_CLEAN = ROOT / "egemaps_experiment" / "artifacts" / "degams_clean_v2" / "edaic"
 _feat_root = os.environ.get("DEGAMS_FEATURE_ROOT")
 CLEAN_V2 = Path(_feat_root) if _feat_root else _DEFAULT_CLEAN
