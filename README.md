@@ -11,7 +11,7 @@ in the paper (DAIC-WOZ, E-DAIC, CMDC). It does **not** contain any clinical data
 
 ## Model overview
 
-![DeGaMS overall architecture](figures/Fig_DeGaMS_Overall_Architecture.png)
+![DeGaMS overall architecture](figures/Fig01_DeGaMS_Overall_Architecture.svg)
 
 ## Code availability (double-blind)
 
@@ -107,7 +107,7 @@ DeGaMS/
     ├── PIPELINE.md
     ├── Text/  audio/  visual/  _dataset_train/
 └── figures/
-    └── Fig_DeGaMS_Overall_Architecture.png
+    └── Fig01_DeGaMS_Overall_Architecture.svg
 ```
 
 All three corpora follow the same convention: `Text/`, `audio/`, and `visual/` encode the raw
@@ -169,10 +169,10 @@ You **must** set `DEGAMS_ROOT` before extraction or training. This repository do
 
 ```bash
 # DAIC-WOZ — full gated DeGaMS, DEV-selected seed sweep
-python DAIC/_dataset_train/train_daic_degams_seed_sweep.py --num_seeds 5 --epochs 100
+python DAIC/_dataset_train/train_daic_degams_seed_sweep.py --num_seeds 5 --epochs 50
 
 # E-DAIC
-python E-DAIC/_dataset_train/train_edaic_degams_seed_sweep.py --num_seeds 5 --epochs 100
+python E-DAIC/_dataset_train/train_edaic_degams_seed_sweep.py --num_seeds 5 --epochs 50
 
 # CMDC — repeat for --fold 1..5
 python CMDC/_dataset_train/train_cmdc_degams_seed_sweep.py --fold 1 --num_seeds 5 --epochs 50
