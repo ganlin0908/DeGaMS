@@ -38,4 +38,5 @@ openpyxl==3.1.5
 # opensmile==2.5.0
 #
 # Silero VAD is fetched at runtime via torch.hub (snakers4/silero-vad) and
-# needs no pip package. OpenFace 2.2.0 is an external binary; see README.
+# needs no pip package. OpenFace 2.1.0 Pose/Gaze/AU CSVs come from the official
+# DAIC-WOZ / E-DAIC releases (not re-extracted locally); see README.

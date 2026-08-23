@@ -58,12 +58,13 @@ Pretrained encoders are downloaded from the Hugging Face Hub on first use:
 | Audio | DAIC-WOZ, E-DAIC | `facebook/wav2vec2-base` |
 | Audio | CMDC | `TencentGameMate/chinese-wav2vec2-base` |
 
-Two external, non-pip dependencies are needed only for the DAIC-WOZ visual and audio front-ends:
-[OpenFace 2.2.0](https://github.com/TadasBaltrusaitis/OpenFace) (facial action units, gaze, pose)
-and, optionally, [DeepFilterNet](https://github.com/Rikorose/DeepFilterNet) for speech
-enhancement. The audio extractor degrades gracefully if DeepFilterNet is absent
-(DeepFilterNet → `noisereduce` → raw + Silero VAD → energy VAD), so it is not required to
-reproduce the results.
+Visual features for DAIC-WOZ / E-DAIC use the **official corpus-released OpenFace 2.1.0**
+Pose/Gaze/AU CSVs (E-DAIC filenames `*_OpenFace2.1.0_Pose_gaze_AUs.csv`; DAIC from the
+official interview archives)—see `DAIC/visual/extract_openface_visual_210.py`. We do **not**
+re-run a local OpenFace binary for the reported results. Optionally,
+[DeepFilterNet](https://github.com/Rikorose/DeepFilterNet) may be used for speech enhancement;
+the audio extractor degrades gracefully if it is absent (DeepFilterNet → `noisereduce` →
+raw + Silero VAD → energy VAD), so it is not required to reproduce the results.
 
 ## Data availability
 
