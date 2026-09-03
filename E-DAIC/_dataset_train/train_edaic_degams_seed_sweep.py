@@ -1,16 +1,13 @@
 """DeGaMS ABDE dynamic seed sweep on E-DAIC (DEV-driven; single TEST; optional ensemble).
 
-Protocol mirrors DAIC ``train_daic_degams_seed_sweep.py`` (anti-leakage):
-  1. seeds = range(start_seed, start_seed + num_seeds)
-  2. Per seed: train; DEV thr search in PHQ band [8,12]; save best-DEV ckpt
-  3. Global best_seed = argmax DEV Macro-F1  (TEST never used for selection)
-  4. Official: best seed ckpt + DEV best_thr → TEST once
-  5. Optional --ensemble: mean soft PHQ; thr re-searched on averaged DEV scores
-     (not mean of per-seed thr); optional --ensemble-top-k by DEV Macro-F1
+Paper protocol (same as DAIC seed sweep; reported runs):
+  1. Train once per seed for --epochs (default 50).
+  2. Each epoch: DEV grid-search τ in [8, 12] by Macro-F1 only (no retraining).
+  3. Rank seeds by DEV Macro-F1; evaluate official TEST once.
+  4. Optional --ensemble: average soft PHQ; τ re-fit on averaged DEV scores only.
 
-Features: MentalBERT + VAD Mel+pause + OpenFace-210 (clean_v2) + hybrid turns.
-Default arch match to frozen DAIC Full: --ablate-cmcl --ablate-gate --ablate-turn-attn
-and --no-dual-visual (E-DAIC visual is single-source 768-D DenseNet-PCA).
+Features: MentalBERT [768-D] + Enhanced wav2vec [768-D] + Visual Dense (OF29 + DenseNet768 = 797-D) + hybrid turns.
+Reported runs set DEGAMS_FEATURE_ROOT to the avboost tree (visual→visual_dense, wav2vec→wav2vec_enh).
 """
 
 from __future__ import annotations
@@ -231,13 +228,7 @@ def train_one_seed(
         sched.step()
 
         y_dev, s_dev = predict_scores(model, dev_loader, device)
-        min_p = args.min_precision if args.min_precision and args.min_precision > 0 else None
-        max_r = args.max_recall if getattr(args, "max_recall", 0) and args.max_recall > 0 else None
-        req_p_ge_r = bool(getattr(args, "require_precision_ge_recall", False))
-        prefer_thr = getattr(args, "prefer_thr", None)
-        prefer_w = float(getattr(args, "prefer_thr_weight", 0.0) or 0.0)
-        if prefer_thr is not None and float(prefer_thr) <= 0:
-            prefer_thr = None
+        # Paper protocol: unconstrained Macro-F1 on the DEV PHQ grid (no extra thr knobs).
         dev_sel = eval_dev_with_thr_search(
             y_dev,
             s_dev,
@@ -245,11 +236,6 @@ def train_one_seed(
             thr_max=args.thr_max,
             thr_step=args.thr_step,
             criterion=args.thr_criterion,
-            min_precision=min_p,
-            max_recall=max_r,
-            require_precision_ge_recall=req_p_ge_r,
-            prefer_thr=float(prefer_thr) if prefer_thr is not None else None,
-            prefer_thr_weight=prefer_w,
         )
         m = dev_sel["metrics"]
         row = {
@@ -261,7 +247,6 @@ def train_one_seed(
             "dev_p": float(m["precision"]),
             "dev_r": float(m["recall"]),
             "dev_acc": float(m["accuracy"]),
-            "min_precision": min_p,
         }
         history.append(row)
         print(
@@ -346,7 +331,7 @@ def parse_args() -> argparse.Namespace:
         "--dual-visual",
         action=argparse.BooleanOptionalAction,
         default=True,
-        help="Dual visual heads (clean_v2 OpenFace-210: default ON)",
+        help="Dual visual heads when vdim=210; Visual Dense 797-d uses DenseVisual (this flag is ignored)",
     )
     p.add_argument("--thr-min", type=float, default=8.0)
     p.add_argument("--thr-max", type=float, default=12.0)
@@ -357,39 +342,11 @@ def parse_args() -> argparse.Namespace:
         default="macro_f1",
         choices=["macro_f1", "balanced_score", "f1"],
     )
-    p.add_argument("--min-precision", type=float, default=0.0)
-    p.add_argument("--max-recall", type=float, default=0.0)
-    p.add_argument("--require-precision-ge-recall", action="store_true")
-    p.add_argument(
-        "--prefer-thr",
-        type=float,
-        default=0.0,
-        help="Soft-prefer DEV thr near this PHQ value (0=disabled).",
-    )
-    p.add_argument(
-        "--prefer-thr-weight",
-        type=float,
-        default=0.0,
-        help="Penalty weight * |thr-prefer_thr| on DEV criterion.",
-    )
     p.add_argument(
         "--ensemble-top-k",
         type=int,
         default=0,
-        help="Ensemble only top-k seeds by DEV Macro-F1 (0=all).",
-    )
-    p.add_argument(
-        "--sel-thr-center",
-        type=float,
-        default=10.0,
-        help="Official seed selection: prefer DEV thr near this PHQ value.",
-    )
-    p.add_argument(
-        "--sel-thr-radius",
-        type=float,
-        default=1.5,
-        help="Official seed selection: only consider seeds with |thr-center|<=radius "
-        "(0=disabled). Falls back to all seeds if none qualify.",
+        help="Optional reporting only; 0=all seeds.",
     )
     p.add_argument("--cpu", action="store_true")
     p.add_argument("--out-dir", type=str, default="")
@@ -475,6 +432,7 @@ def main() -> int:
     print("[filter dev]", shared["dev_ds"].filter_stats)
     print("[filter test]", shared["test_ds"].filter_stats)
 
+    print("[protocol] DEV Macro-F1 thr grid only; official TEST once")
     seed_results: list[dict] = []
     for seed in seeds:
         result = train_one_seed(args, seed, run_dir, device, shared)
@@ -486,13 +444,8 @@ def main() -> int:
 
     best = select_best_seed(
         seed_results,
-        thr_center=float(getattr(args, "sel_thr_center", 10.0) or 10.0),
-        thr_radius=(
-            float(args.sel_thr_radius)
-            if getattr(args, "sel_thr_radius", None) is not None
-            and float(args.sel_thr_radius) > 0
-            else None
-        ),
+        thr_center=10.0,
+        thr_radius=None,
     )
     print(
         f"[select] Global Best Seed={best['seed']} "
@@ -531,12 +484,6 @@ def main() -> int:
     ensemble = None
     if args.ensemble:
         top_k = int(getattr(args, "ensemble_top_k", 0) or 0) or None
-        prefer_thr = getattr(args, "prefer_thr", None)
-        prefer_w = float(getattr(args, "prefer_thr_weight", 0.0) or 0.0)
-        if prefer_thr is not None and float(prefer_thr) <= 0:
-            prefer_thr = None
-        min_p = args.min_precision if args.min_precision and args.min_precision > 0 else None
-        max_r = args.max_recall if getattr(args, "max_recall", 0) and args.max_recall > 0 else None
         print(
             "[ensemble] avg soft PHQ; thr=DEV re-search on mean DEV scores"
             + (f"; top_k={top_k}" if top_k else "")
@@ -551,11 +498,6 @@ def main() -> int:
             thr_max=args.thr_max,
             thr_step=args.thr_step,
             thr_criterion=args.thr_criterion,
-            min_precision=min_p,
-            max_recall=max_r,
-            require_precision_ge_recall=bool(getattr(args, "require_precision_ge_recall", False)),
-            prefer_thr=float(prefer_thr) if prefer_thr is not None else None,
-            prefer_thr_weight=prefer_w,
         )
         print(
             "[ensemble TEST] "
@@ -571,13 +513,13 @@ def main() -> int:
     # Annotate corpus in SUMMARY.json
     payload["corpus"] = "edaic"
     payload["protocol"] = (
-        "E-DAIC DeGaMS ABDE seed sweep · MentalBERT + Mel + DenseNet-PCA · "
+        "E-DAIC DeGaMS ABDE seed sweep · MentalBERT + Enhanced wav2vec + Visual Dense (avboost) · "
         "hybrid · soft-PHQ · DEV Macro-F1 select · single TEST · optional ensemble"
     )
     payload["features"] = {
-        "text": "MentalBERT [T,768] from EDAIC/extracted_features",
-        "audio": "log-Mel [T,80] from egemaps_experiment/artifacts/mel_embeds/edaic",
-        "visual": "OpenFace Pose/Gaze/AU_r 210-d (clean_v2); Mel=80+pause8+soft quality",
+        "text": "MentalBERT [T,768] via DEGAMS_FEATURE_ROOT/text",
+        "audio": "Enhanced wav2vec 2.0 [T,768] (wav2vec_enh) via DEGAMS_FEATURE_ROOT/wav2vec",
+        "visual": "Combined Visual [T,797] (OpenFace 29-d + DenseNet 768-d visual_dense) via DEGAMS_FEATURE_ROOT/visual",
         "labels": "EDAIC/label/{train,dev,test}_split.csv + detailed_lables PHQ items (train/dev only)",
     }
     (run_dir / "SUMMARY.json").write_text(
