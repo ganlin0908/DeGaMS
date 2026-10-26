@@ -9,10 +9,6 @@ This repository contains the feature-extraction and training code for the three 
 in the paper (DAIC-WOZ, E-DAIC, CMDC). It does **not** contain any clinical data — see
 [Data availability](#data-availability).
 
-## Model overview
-
-![DeGaMS overall architecture](figures/Fig01_DeGaMS_Overall_Architecture.svg)
-
 ## Code availability (double-blind)
 
 For anonymous peer review, use the Anonymous GitHub mirror linked in the manuscript
@@ -105,9 +101,7 @@ DeGaMS/
 │   ├── Text/  audio/  visual/  _dataset_train/
 └── CMDC/
     ├── PIPELINE.md
-    ├── Text/  audio/  visual/  _dataset_train/
-└── figures/
-    └── Fig01_DeGaMS_Overall_Architecture.svg
+    └── Text/  audio/  visual/  _dataset_train/
 ```
 
 All three corpora follow the same convention: `Text/`, `audio/`, and `visual/` encode the raw
@@ -172,7 +166,7 @@ You **must** set `DEGAMS_ROOT` before extraction or training. This repository do
 python DAIC/_dataset_train/train_daic_degams_seed_sweep.py --num_seeds 5 --epochs 50
 
 # E-DAIC
-python E-DAIC/_dataset_train/train_edaic_degams_seed_sweep.py --num_seeds 5 --epochs 50
+python E-DAIC/_dataset_train/train_edaic_degams_seed_sweep.py --num_seeds 5 --epochs 100
 
 # CMDC — repeat for --fold 1..5
 python CMDC/_dataset_train/train_cmdc_degams_seed_sweep.py --fold 1 --num_seeds 5 --epochs 50

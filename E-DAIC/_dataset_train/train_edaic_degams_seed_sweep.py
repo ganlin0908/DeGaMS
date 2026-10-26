@@ -1,7 +1,7 @@
 """DeGaMS ABDE dynamic seed sweep on E-DAIC (DEV-driven; single TEST; optional ensemble).
 
 Paper protocol (same as DAIC seed sweep; reported runs):
-  1. Train once per seed for --epochs (default 50).
+  1. Train once per seed for --epochs (default 100).
   2. Each epoch: DEV grid-search τ in [8, 12] by Macro-F1 only (no retraining).
   3. Rank seeds by DEV Macro-F1; evaluate official TEST once.
   4. Optional --ensemble: average soft PHQ; τ re-fit on averaged DEV scores only.
@@ -311,7 +311,7 @@ def parse_args() -> argparse.Namespace:
         action=argparse.BooleanOptionalAction,
         default=True,
     )
-    p.add_argument("--epochs", type=int, default=50)
+    p.add_argument("--epochs", type=int, default=100)
     p.add_argument("--batch-size", type=int, default=8)
     p.add_argument("--lr", type=float, default=5e-4)
     p.add_argument("--weight-decay", type=float, default=5e-5)
