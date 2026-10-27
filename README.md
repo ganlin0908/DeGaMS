@@ -9,6 +9,22 @@ This repository contains the feature-extraction and training code for the three 
 in the paper (DAIC-WOZ, E-DAIC, CMDC). It does **not** contain any clinical data — see
 [Data availability](#data-availability).
 
+## Architecture
+
+![DeGaMS overall architecture](figures/Fig01_DeGaMS_Overall_Architecture.png)
+
+The figure is the Section 3.4 forward pass. Dashed arrows are training losses. They do not re-enter the forward path.
+
+- Modality encoders map the turn features \(I_t\), \(I_a\), and \(I_v\) to \(H_m \in \mathbb{R}^{T \times 256}\).
+- Shared–specific decomposition uses one weight-tied map \(W_{sh}\) and a private map \(W_m\): \(c_m = \mathrm{L2Norm}(W_{sh} H_m)\), \(s_m = \mathrm{L2Norm}(W_m H_m)\), and \(f_m = [c_m \| s_m] \in \mathbb{R}^{T \times 512}\).
+- \(z_t, z_a, z_v\) are masked turn-attention pools of \(c_t, c_a, c_v\). They are the inputs of \(\mathcal{L}_{cmc}\) only.
+- The Presence-Aware Gate sets an absent stream’s logit to \(-\infty\), uses \(\tau_g = 1.5\), and floors each present stream by \(\varepsilon = 0.08\) clipped at \(0.95/N_{\mathrm{pres}}\). Fusion is \(F = N_{\mathrm{pres}} \sum_m g_m f_m\).
+- Multi-scale attention fusion applies standard Conv1d kernels \(\{1,3,5\}\) (not depthwise), then masked turn attention pools the sequence to the session vector \(R \in \mathbb{R}^{512}\).
+- Eight ordinal heads give \(y_i = \sum_{j=0}^{3} j \cdot p_{i,j}\) and \(\mathrm{PHQ} = \sum_{i=1}^{8} y_i\).
+- \(\mathcal{L} = 0.004\,\mathcal{L}_{\mathrm{SupCon}} + 0.01\,\mathcal{L}_{\mathrm{MSE}} + \lambda_{\mathrm{KL}}\mathcal{L}_{\mathrm{KL}} + 0.05\,\mathcal{L}_{\mathrm{cmc}} + 0.02\,\mathcal{L}_{\mathrm{gate\text{-}ent}}\). \(\lambda_{\mathrm{KL}}\) is 0.8 on DAIC-WOZ and E-DAIC, and 2.0 on CMDC.
+
+Diagnostic plots for the reported runs are in `figures/`.
+
 ## Code availability (double-blind)
 
 For anonymous peer review, use the Anonymous GitHub mirror linked in the manuscript
@@ -99,9 +115,12 @@ DeGaMS/
 ├── E-DAIC/
 │   ├── PIPELINE.md
 │   ├── Text/  audio/  visual/  _dataset_train/
-└── CMDC/
-    ├── PIPELINE.md
-    └── Text/  audio/  visual/  _dataset_train/
+├── CMDC/
+│   ├── PIPELINE.md
+│   └── Text/  audio/  visual/  _dataset_train/
+└── figures/
+    ├── Fig01_DeGaMS_Overall_Architecture.png
+    └── Fig02–Fig11, FigA1 diagnostic plots
 ```
 
 All three corpora follow the same convention: `Text/`, `audio/`, and `visual/` encode the raw
